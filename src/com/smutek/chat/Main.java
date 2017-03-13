@@ -2,6 +2,7 @@ package com.smutek.chat;
 
 import com.smutek.chat.asciiart.ASCIIArtService;
 import com.smutek.chat.udp.UDPConnectionHandler;
+import com.smutek.chat.udp.UDPMulticastConnectionHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,12 +35,17 @@ public class Main {
             int UDPPort = Integer.parseInt(in.readLine());
             UDPConnectionHandler udpConnectionHandler = new UDPConnectionHandler(UDPPort);
             udpConnectionHandler.start();
+            UDPMulticastConnectionHandler udpMulticastConnectionHandler = new UDPMulticastConnectionHandler();
+            udpMulticastConnectionHandler.start();
             MessageReceiver messageReceiver = new MessageReceiver(in);
             messageReceiver.start();
             while (true){
                 String msg = br.readLine();
                 if (msg.equals("k")){
                     udpConnectionHandler.sendUDP(ASCIIArtService.getImage());
+                }
+                else if (msg.equals("n")){
+                    udpMulticastConnectionHandler.sendMulticastMsg(ASCIIArtService.getImage());
                 }
                 else
                     out.println(msg);
