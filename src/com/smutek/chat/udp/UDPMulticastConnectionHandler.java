@@ -1,6 +1,8 @@
 package com.smutek.chat.udp;
 
-import java.io.IOException;
+import com.smutek.chat.message.UDPMulticastMessage;
+
+import java.io.*;
 import java.net.*;
 
 
@@ -13,8 +15,10 @@ public class UDPMulticastConnectionHandler extends Thread {
     private MulticastSocket multicastSocket = null;
     private InetAddress address = null;
     private static int bufforSize = 3000;
+    private String nick;
 
-    public UDPMulticastConnectionHandler(){
+    public UDPMulticastConnectionHandler(String nick){
+        this.nick = nick;
         try {
             address = InetAddress.getByName(multicastAddr);
             multicastSocket = new MulticastSocket(port);
@@ -32,11 +36,16 @@ public class UDPMulticastConnectionHandler extends Thread {
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length, address , port);
             while (true){
                 multicastSocket.receive(receivePacket);
-                System.out.println(new String(receivePacket.getData()));
+                ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(receiveBuffer));
+                UDPMulticastMessage message = (UDPMulticastMessage) in.readObject();
+                in.close();
+                if (!message.getNick().equals(nick)) {
+                    System.out.println(message.getMessage());
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 multicastSocket.leaveGroup(address);
                 multicastSocket.close();
@@ -46,11 +55,16 @@ public class UDPMulticastConnectionHandler extends Thread {
         }
     }
 
-    public void sendMulticastMsg(String msg){
+    public void sendMulticastMsg(UDPMulticastMessage msg){
         DatagramSocket datagramSocket = null;
         try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(bufforSize);
+            ObjectOutputStream out = new ObjectOutputStream(baos);
+            out.writeObject(msg);
+            out.close();
+            byte[] buffer = baos.toByteArray();
             datagramSocket = new DatagramSocket();
-            DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), msg.getBytes().length, address, port);
+            DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
             datagramSocket.send(sendPacket);
         } catch (SocketException e) {
             e.printStackTrace();

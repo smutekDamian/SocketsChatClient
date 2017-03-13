@@ -1,6 +1,7 @@
 package com.smutek.chat;
 
 import com.smutek.chat.asciiart.ASCIIArtService;
+import com.smutek.chat.message.UDPMulticastMessage;
 import com.smutek.chat.udp.UDPConnectionHandler;
 import com.smutek.chat.udp.UDPMulticastConnectionHandler;
 
@@ -35,7 +36,7 @@ public class Main {
             int UDPPort = Integer.parseInt(in.readLine());
             UDPConnectionHandler udpConnectionHandler = new UDPConnectionHandler(UDPPort);
             udpConnectionHandler.start();
-            UDPMulticastConnectionHandler udpMulticastConnectionHandler = new UDPMulticastConnectionHandler();
+            UDPMulticastConnectionHandler udpMulticastConnectionHandler = new UDPMulticastConnectionHandler(nick);
             udpMulticastConnectionHandler.start();
             MessageReceiver messageReceiver = new MessageReceiver(in);
             messageReceiver.start();
@@ -45,7 +46,7 @@ public class Main {
                     udpConnectionHandler.sendUDP(ASCIIArtService.getImage());
                 }
                 else if (msg.equals("n")){
-                    udpMulticastConnectionHandler.sendMulticastMsg(ASCIIArtService.getImage());
+                    udpMulticastConnectionHandler.sendMulticastMsg(new UDPMulticastMessage(nick,ASCIIArtService.getImage()));
                 }
                 else
                     out.println(msg);
