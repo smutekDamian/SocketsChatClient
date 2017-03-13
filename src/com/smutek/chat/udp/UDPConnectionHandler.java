@@ -10,6 +10,7 @@ public class UDPConnectionHandler extends Thread {
     private int port;
     private DatagramSocket socket = null;
     private InetAddress address;
+    private static int bufferSize = 3000;
 
     public UDPConnectionHandler(int port) {
         this.port = port;
@@ -42,7 +43,7 @@ public class UDPConnectionHandler extends Thread {
     }
 
     public void run(){
-        byte[] receiveBuffer = new byte[3000];
+        byte[] receiveBuffer = new byte[bufferSize];
         while(true){
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             try {
