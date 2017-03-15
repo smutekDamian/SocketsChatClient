@@ -42,7 +42,7 @@ public class Main {
             messageReceiver.start();
             while (true){
                 String msg = br.readLine();
-                if (msg.equals("k")){
+                if (msg.equals("m")){
                     udpConnectionHandler.sendUDP(ASCIIArtService.getImage());
                 }
                 else if (msg.equals("n")){

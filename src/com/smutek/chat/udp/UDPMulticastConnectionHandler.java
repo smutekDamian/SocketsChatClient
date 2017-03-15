@@ -10,7 +10,7 @@ import java.net.*;
  * Created by damian on 13.03.17.
  */
 public class UDPMulticastConnectionHandler extends Thread {
-    private int port = 13345;
+    private int port = 12345;
     private String multicastAddr = "230.1.1.1";
     private MulticastSocket multicastSocket = null;
     private InetAddress address = null;
@@ -22,8 +22,6 @@ public class UDPMulticastConnectionHandler extends Thread {
         try {
             address = InetAddress.getByName(multicastAddr);
             multicastSocket = new MulticastSocket(port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,11 +64,10 @@ public class UDPMulticastConnectionHandler extends Thread {
             datagramSocket = new DatagramSocket();
             DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
             datagramSocket.send(sendPacket);
-        } catch (SocketException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            assert datagramSocket != null;
             datagramSocket.close();
         }
     }
